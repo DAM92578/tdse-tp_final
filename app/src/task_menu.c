@@ -108,10 +108,6 @@ void task_menu_init(void *parameters)
 	/* Update Task Actuator Configuration & Data Pointer */
 	p_task_menu_dta = & task_menu_dta;
 
-//	p_task_menu_set_up_dta->tiempo_conmuta_falla =0;
-//	p_task_menu_set_up_dta->tiempo_reporta_falla =0;
-//	p_task_menu_set_up_dta->set_point_temperatura=0;
-
 	/* Print out: Task execution FSM */
 	state = p_task_menu_dta->state;
 	LOGGER_LOG("   %s = %lu", GET_NAME(state), (uint32_t)state);
