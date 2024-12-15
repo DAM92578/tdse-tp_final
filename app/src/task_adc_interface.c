@@ -29,7 +29,8 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @file   : task_adc.c
+ *
+ * @file   : task_menu_interface.c
  * @date   : Set 26, 2023
  * @author : Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>
  * @version	v1.0.0
@@ -46,65 +47,72 @@
 /* Application & Tasks includes. */
 #include "board.h"
 #include "app.h"
+#include "task_menu_attribute.h"
+#include "task_adc_interface.h"
 /********************** macros and definitions *******************************/
-#define SAMPLES_COUNTER (10)
-#define AVERAGER_SIZE (10)
+#define VALUE_UNDEFINED	(255)
+#define MAX_VALUES		(16)
 
 /********************** internal data declaration ****************************/
-uint32_t averaged;
-volatile uint32_t sample_cnt=0;
-uint32_t first_sample=1;
+
 /********************** internal functions declaration ***********************/
+
 /********************** internal data definition *****************************/
-const char *p_task_adc 		= "Task ADC";
-/********************** external data declaration *****************************/
-extern ADC_HandleTypeDef hadc1;
-volatile uint16_t sample_to_take ;
+struct
+{
+	uint32_t	head;
+	uint32_t	tail;
+	uint32_t	count;
+	uint32_t  	queue[MAX_VALUES];
+} queue_task_adc;
 
-/********************** internal functions declaration ***********************/
+/********************** external data declaration ****************************/
+
 /********************** external functions definition ************************/
-void task_adc_init(void *parameters){
-	/* Print out: Task Initialized */
-	LOGGER_LOG("  %s is running - %s\r\n", GET_NAME(task_adc_init), p_task_adc);
-    }
+void init_queue_value_task_adc(void)
+{
+	uint32_t i;
 
-void task_adc_update(void *parameters){
-	  uint16_t value;
+	queue_task_adc.head = 0;
+	queue_task_adc.tail = 0;
+	queue_task_adc.count = 0;
 
-	  if(0<first_sample){
-		  HAL_ADC_Start_IT(&hadc1);
-          first_sample=0;
-          sample_to_take=1;
-	  }
-
-    if(sample_cnt< AVERAGER_SIZE ){
-
-    	  if(0<sample_to_take){
-    		  sample_to_take--;
-		    value = HAL_ADC_GetValue(&hadc1);
-		    HAL_ADC_Start_IT(&hadc1);
-		    averaged += value;
-		    sample_cnt++;
-		    }
-		}
-		else{
-
-			 averaged = averaged / AVERAGER_SIZE;
-			 //temp_ambiente= (averaged);//->pasar dato por cola.
-			 put_value_task_adc(averaged);
-			 averaged =0;
-			 sample_cnt=0;
-			 sample_to_take=0;
-			 first_sample=1;
-			 }
-  return;
+	for (i = 0; i < MAX_VALUES; i++)
+		queue_task_adc.queue[i] = VALUE_UNDEFINED;
 }
 
-//	Requests start of conversion, waits until conversion done
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
-	// Check which version of the adc triggered this callback
-	if (hadc == &hadc1){
-		sample_to_take=1;}
-      }
+void put_value_task_adc(uint32_t adc_value )
+{
+	queue_task_adc.count++;
+	queue_task_adc.queue[queue_task_adc.head++] = adc_value;
+
+	if (MAX_VALUES == queue_task_adc.head)
+		queue_task_adc.head = 0;
+}
+uint32_t  get_value_task_adc(void)
+
+{
+	uint32_t value;
+
+	queue_task_adc.count--;
+	value = queue_task_adc.queue[queue_task_adc.tail];
+	queue_task_adc.queue[queue_task_adc.tail++] = VALUE_UNDEFINED;
+
+	if (MAX_VALUES == queue_task_adc.tail)
+		queue_task_adc.tail = 0;
+
+	return value;
+}
+
+bool any_value_task_adc(void)
+{
+	bool value;
+	if(queue_task_adc.head != queue_task_adc.tail){
+		value=true;}
+	else{
+		value=false;}
+
+  return value ;
+}
 
 /********************** end of file ******************************************/

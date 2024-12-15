@@ -67,7 +67,6 @@ static void MX_ADC1_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 extern void initialise_monitor_handles(void);
-uint32_t temp_ambiente;
 /* USER CODE END 0 */
 
 /**

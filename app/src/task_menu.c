@@ -43,12 +43,13 @@
 /* Demo includes. */
 #include "logger.h"
 #include "dwt.h"
-
+#include "task_adc_interface.h"
 /* Application & Tasks includes. */
 #include "board.h"
 #include "app.h"
 #include "task_menu_attribute.h"
 #include "task_menu_interface.h"
+
 #include "display.h"
 
 /********************** macros and definitions *******************************/
@@ -84,7 +85,7 @@ const char *p_task_menu_ 		= "Non-Blocking & Update By Time Code";
 uint32_t g_task_menu_cnt;
 volatile uint32_t g_task_menu_tick_cnt;
 task_menu_set_up_dta_t   *p_task_menu_set_up_dta;
-extern uint32_t temp_ambiente;
+
 
 /********************** external functions definition ************************/
 void task_menu_init(void *parameters)
@@ -134,6 +135,7 @@ void task_menu_update(void *parameters)
 	float lm35_temp;
 	uint32_t lm35_temp_whole;
 	uint32_t lm35_temp_decimal;
+	uint32_t temp;
 
 
 	bool b_time_update_required = false;
@@ -193,15 +195,17 @@ void task_menu_update(void *parameters)
 	            	  	  	      displayCharPositionWrite(0, 0);
 	            	  	  	      displayStringWrite("Ent/Nxt [*C]    ");
 
+	            	  			if ( true == any_value_task_adc()){
+	            	  				//VER QUE CADA TANTO TIRA CUALQUIER VALOR
 
-	            	  	  	      /* Print out: LM35 Temperature */
-	            	  			lm35_temp = (3.30 * 100 * (float)temp_ambiente)/(4096);
-	            	  			lm35_temp_whole = (uint32_t)lm35_temp;
-	            	  			//lm35_temp_decimal = (uint32_t)((lm35_temp - lm35_temp_whole) * 10);//10000 (int)lm35_temp_decimal,
+	            	  			}
+	            	  			    temp=get_value_task_adc();
+		            	  			lm35_temp = (3.30 * 100 * (float)temp)/(4096);
+		            	  			lm35_temp_whole = (uint32_t)lm35_temp;
+
 
 	            	  			  displayCharPositionWrite(0,1);
 	            	  			  snprintf(menu_str, sizeof(menu_str),"Tamb:%lu Tset:%lu ",(int)lm35_temp_whole,p_task_menu_set_up_dta->set_point_temperatura);
-	            	  			//%4d.%01dCTset%lu Tamb%lu.%lu Tset%luC
 	            	  			  displayStringWrite(menu_str);
 
 	            	    	  	  if ((true == p_task_menu_dta->flag) && (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event)){
