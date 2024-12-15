@@ -49,7 +49,7 @@
 #include "task_menu.h"
 #include "task_actuator.h"
 #include "task_adc.h"
-#include "task_actuator.h"
+
 
 /********************** macros and definitions *******************************/
 #define G_APP_CNT_INI		0ul

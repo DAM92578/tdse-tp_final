@@ -60,7 +60,7 @@ const char *p_task_adc 		= "Task ADC";
 /********************** external data declaration *****************************/
 extern ADC_HandleTypeDef hadc1;
 volatile uint16_t sample_to_take ;
-
+extern uint32_t temp_ambiente;
 /********************** internal functions declaration ***********************/
 /********************** external functions definition ************************/
 void task_adc_init(void *parameters){
@@ -90,8 +90,7 @@ void task_adc_update(void *parameters){
 		else{
 
 			 averaged = averaged / AVERAGER_SIZE;
-			 //temp_ambiente= (averaged);//->pasar dato por cola.
-			 put_value_task_adc(averaged);
+			 temp_ambiente= (averaged);//->pasar dato por cola.
 			 averaged =0;
 			 sample_cnt=0;
 			 sample_to_take=0;
