@@ -87,7 +87,7 @@ typedef enum task_menu_1_st { SET_UP_TIEMPO_CONMUTA_FALLA_MEN_1,
 											}task_menu_1_st_t;
 
 
-typedef enum task_menu_3_st {
+typedef enum task_menu_2_st {
 	                              SET_UP_TIEMPO_CONMUTA_FALLA_MEN_2,
 								  SET_UP_TIEMPO_REPORTA_FALLA_MEN_2,
 								  SET_UP_SET_POINT_TEMPERATURA_MEN_2
