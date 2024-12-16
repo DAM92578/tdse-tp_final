@@ -79,6 +79,11 @@ extern "C" {
 #define LED_B_ON		GPIO_PIN_SET
 #define LED_B_OFF		GPIO_PIN_RESET
 
+#define LED_C_PIN		C12_Pin
+#define LED_C_PORT		C12_GPIO_Port
+#define LED_C_ON		GPIO_PIN_SET
+#define LED_C_OFF		GPIO_PIN_RESET
+
 #define BUZZER_A_PIN	C8_Pin
 #define BUZZER_A_PORT	C8_GPIO_Port
 #define BUZZER_A_ON		GPIO_PIN_SET

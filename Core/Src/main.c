@@ -49,7 +49,6 @@
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 
-
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
@@ -61,7 +60,6 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_ADC1_Init(void);
-
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -104,7 +102,6 @@ initialise_monitor_handles();
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   MX_ADC1_Init();
-
   /* USER CODE BEGIN 2 */
 
 	/* Application Init */
@@ -135,7 +132,6 @@ void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
-
 
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
@@ -280,9 +276,9 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(D10_GPIO_Port, D10_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : B1_Pin C6_Pin C8_Pin C9_Pin
-                           C10_Pin */
+                           C10_Pin C12_Pin */
   GPIO_InitStruct.Pin = B1_Pin|C6_Pin|C8_Pin|C9_Pin
-                          |C10_Pin;
+                          |C10_Pin|C12_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);

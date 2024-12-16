@@ -11,7 +11,8 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- *
+ *	{ID_LED_C,  LED_C_PORT,  LED_C_PIN, LED_C_ON,  LED_C_OFF,
+		 DEL_LED_XX_BLI, DEL_LED_XX_PUL},
  * 3. Neither the name of the copyright holder nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
@@ -119,6 +120,7 @@ typedef enum task_actuator_st {ST_LED_XX_OFF,
 /* Identifier of Task Actuator */
 typedef enum task_actuator_id {ID_LED_A,
 								ID_LED_B,
+								ID_LED_C,
 								ID_BUZZER_A,
 								ID_AIRE_A,
 								ID_AIRE_B} task_actuator_id_t;

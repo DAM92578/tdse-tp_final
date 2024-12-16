@@ -48,11 +48,16 @@
 #include "board.h"
 #include "app.h"
 #include "display.h"
+
 #include "task_adc_interface.h"
+//#include "task_adc_attribute.h"
+
 #include "task_normal_attribute.h"
 #include "task_normal_interface.h"
+
 #include "task_actuator_attribute.h"
 #include "task_actuator_interface.h"
+
 #include "task_menu_interface.h"
 
 /********************** macros and definitions *******************************/
@@ -65,11 +70,11 @@
 
 /********************** internal data declaration ****************************/
 
-uint32_t temp_amb = 0;
+uint32_t tempAmb = 0;
 
 
 task_system_dta_t task_system_dta =
-	{DEL_SYS_XX_MIN, ST_SYS_01_ENTRY_EMPTY , EV_SYS_XX_IDLE, false};
+	{DEL_SYS_XX_MIN, ST_NORMAL_01_MONITOR , EV_NORMAL_01_MONITOR, false};
 
 #define SYSTEM_DTA_QTY	(sizeof(task_system_dta)/sizeof(task_system_dta_t))
 
@@ -167,27 +172,36 @@ void task_system_update(void *parameters)
 
 				switch(p_task_system_dta->event){
 
-					case EV_MEN_ENT_ACTIVE:
+					case EV_NORMAL_01_NEX_ACTIVE: // si se presionan cualquiera de los botones del display en monitor pasa a setup
+					case EV_NORMAL_01_ENT_ACTIVE:
+
+						// Titilo las luces de usuario y apago todo lo demas
+						put_event_task_actuator(EV_LED_XX_BLINK,ID_LED_A);
+						put_event_task_actuator(EV_LED_XX_BLINK,ID_LED_B);
+
+						put_event_task_actuator(EV_LED_XX_OFF,ID_BUZZER_A);
+						put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_A);
+						put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_B);
+						//cambio a estado standby
+						p_task_system_dta->state = ST_NORMAL_01_STANDBY;
+
 						break;
 
 					case EV_NORMAL_01_FAILURE:
+
+
 						break;
 
 					case EV_NORMAL_01_ALARM_MONITOR:
+
 						break;
 
 					case EV_NORMAL_01_MONITOR:
 						 displayCharPositionWrite(0, 0);
 						 displayStringWrite("Time: 0:5:23 Tmicro: 23°C"); /// aca levantar la temperatura y el clock
 
-						if ( true == any_value_task_adc()){
-							temp_amb=get_value_task_adc();}
-
-						lm35_temp = (3.30 * 100 * temp_amb)/(4096);
-
 						displayCharPositionWrite(0,1);
-						snprintf(menu_str, sizeof(menu_str),"Tamb:%lu Tset:%lu ",lm35_temp,4/*aca agregar la temperatura seteada en menu  */);//p_task_menu_set_up_dta->set_point_temperatura);
-						displayStringWrite(menu_str);
+						displayStringWrite("Tamb: 0:5:23 Tset: 23°C");
 						//clock_tick ++ en el caso de setear un clock a mano
 						break;
 
@@ -206,7 +220,11 @@ void task_system_update(void *parameters)
 
 				switch(p_task_system_dta->event){
 
-					case EV_MEN_ENT_ACTIVE:
+					case EV_NORMAL_01_NEX_ACTIVE:
+						//sigue en set up menu asi que no hago nada;
+						break;
+
+					case EV_NORMAL_01_ENT_ACTIVE:
 						break;
 
 					case EV_NORMAL_01_FAILURE:
@@ -232,7 +250,10 @@ void task_system_update(void *parameters)
 
 				switch(p_task_system_dta->event){
 
-					case EV_MEN_ENT_ACTIVE:
+					case EV_NORMAL_01_NEX_ACTIVE:
+						break;
+
+					case EV_NORMAL_01_ENT_ACTIVE:
 						break;
 
 					case EV_NORMAL_01_FAILURE:
@@ -259,7 +280,10 @@ void task_system_update(void *parameters)
 
 				switch(p_task_system_dta->event){
 
-					case EV_MEN_ENT_ACTIVE:
+					case EV_NORMAL_01_NEX_ACTIVE:
+						break;
+
+					case EV_NORMAL_01_ENT_ACTIVE:
 						break;
 
 					case EV_NORMAL_01_FAILURE:
