@@ -35,8 +35,8 @@
  * @version	v1.0.0
  */
 
-#ifndef TASK_INC_TASK_SYSTEM_ATTRIBUTE_H_
-#define TASK_INC_TASK_SYSTEM_ATTRIBUTE_H_
+#ifndef TASK_INC_TASK_NORMAL_ATTRIBUTE_H_
+#define TASK_INC_TASK_NORMAL_ATTRIBUTE_H_
 
 /********************** CPP guard ********************************************/
 #ifdef __cplusplus
@@ -62,58 +62,19 @@ extern "C" {
  */
 
 /* Events to excite Task System */
-typedef enum task_system_ev {	EV_SYS_01_CAR_IN_IDLE,
-								EV_SYS_01_CAR_IN_ACTIVE,
-								EV_SYS_01_MUY_CARO_IDLE,
-								EV_SYS_01_MUY_CARO_ACTIVE,
-								EV_SYS_01_PRINT_TICKET_BTN_IDLE,
-								EV_SYS_01_PRINT_TICKET_BTN_ACTIVE,
-								EV_SYS_01_TICKET_NOT_TAKEN_IDLE,
-								EV_SYS_01_TICKET_NOT_TAKEN_ACTIVE,
-								EV_SYS_01_TICKET_PICKED_UP_IDLE,
-								EV_SYS_01_TICKET_PICKED_UP_ACTIVE,
-								EV_SYS_01_BARRIER_UP_IDLE,
-								EV_SYS_01_BARRIER_UP_ACTIVE,
-								EV_SYS_01_CAR_ENTRYING_IDLE,
-								EV_SYS_01_CAR_ENTRYING_ACTIVE,
-								EV_SYS_01_CAR_ENTERED_IDLE,
-								EV_SYS_01_CAR_ENTERED_ACTIVE,
-								EV_SYS_01_BARRIER_DOWN_IDLE,
-								EV_SYS_01_BARRIER_DOWN_ACTIVE,
-								EV_SYS_XX_IDLE,
-								EV_SYS_XX_ACTIVE
+typedef enum task_system_ev {	EV_NORMAL_01_MONITOR,
+  								EV_NORMAL_01_ALARM_MONITOR,
+								EV_NORMAL_01_FAILURE,
+								EV_NORMAL_01_SWITCH_MOTOR,
+								EV_NORMAL_01_STAND_BY,
 												} task_system_ev_t;
 
 /* State of Task System */
-typedef enum task_system_st {	ST_SYS_01_ENTRY_EMPTY,
-								ST_SYS_01_CAR_IN_ENTRANCE,
-								ST_SYS_01_WAITING_TICKET_REMOVAL,
-								ST_SYS_01_LIFTING_BARRIER,
-								ST_SYS_01_BARRIER_UP,
-								ST_SYS_01_LOWERING_BARRIER,
-								ST_SYS_XX_IDLE,
-								ST_SYS_XX_ACTIVE
+typedef enum task_system_st {	ST_NORMAL_01_MONITOR,
+  								ST_NORMAL_01_ALARM,
+								ST_NORMAL_01_FAILURE,
+								ST_NORMAL_01_STANDBY,
 												} task_system_st_t;
-
-												/***
-												 typedef enum task_system_st {	ST_SYS_01_ENTRY_EMPTY_IDLE,
-								ST_SYS_01_ENTRY_EMPTY_ACTIVE,
-								ST_SYS_01_CAR_IN_ENTRANCE_IDLE,
-								ST_SYS_01_CAR_IN_ENTRANCE_ACTIVE,
-								ST_SYS_01_WAITING_TICKET_REMOVAL_IDLE,
-								ST_SYS_01_WAITING_TICKET_REMOVAL_ACTIVE,
-								ST_SYS_01_LIFTING_BARRIER_IDLE,
-								ST_SYS_01_LIFTING_BARRIER_ACTIVE,
-								ST_SYS_01_BARRIER_UP_IDLE,
-								ST_SYS_01_BARRIER_UP_ACTIVE,
-								ST_SYS_01_LOWERING_BARRIER_IDLE,
-								ST_SYS_01_LOWERING_BARRIER_ACTIVE,
-								ST_SYS_XX_IDLE,
-								ST_SYS_XX_ACTIVE
-												} task_system_st_t;
-
-
-												 */
 
 
 

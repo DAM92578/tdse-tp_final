@@ -47,10 +47,13 @@
 /* Application & Tasks includes. */
 #include "board.h"
 #include "app.h"
+#include "display.h"
+#include "task_adc_interface.h"
 #include "task_normal_attribute.h"
 #include "task_normal_interface.h"
 #include "task_actuator_attribute.h"
 #include "task_actuator_interface.h"
+#include "task_menu_interface.h"
 
 /********************** macros and definitions *******************************/
 #define G_TASK_SYS_CNT_INI			0ul
@@ -61,6 +64,10 @@
 #define DEL_SYS_XX_MAX				500ul
 
 /********************** internal data declaration ****************************/
+
+uint32_t temp_amb = 0;
+
+
 task_system_dta_t task_system_dta =
 	{DEL_SYS_XX_MIN, ST_SYS_01_ENTRY_EMPTY , EV_SYS_XX_IDLE, false};
 
@@ -155,103 +162,123 @@ void task_system_update(void *parameters)
 		switch (p_task_system_dta->state)
 		{
 		/********************************************************************************************/
-		case ST_SYS_01_ENTRY_EMPTY:
+		case ST_NORMAL_01_MONITOR:
+			if (true == p_task_system_dta->flag){ // verifico que haya una task de system
 
-			if ((true == p_task_system_dta->flag) && (EV_SYS_01_CAR_IN_ACTIVE == p_task_system_dta->event))
-			{
-				p_task_system_dta->flag = false;
-				put_event_task_actuator(EV_LED_XX_OFF, ID_LED_A);
-				p_task_system_dta->state = ST_SYS_01_CAR_IN_ENTRANCE;
+				switch(p_task_system_dta->event){
+
+					case EV_MEN_ENT_ACTIVE:
+						break;
+
+					case EV_NORMAL_01_FAILURE:
+						break;
+
+					case EV_NORMAL_01_ALARM_MONITOR:
+						break;
+
+					case EV_NORMAL_01_MONITOR:
+						 displayCharPositionWrite(0, 0);
+						 displayStringWrite("Time: 0:5:23 Tmicro: 23°C"); /// aca levantar la temperatura y el clock
+
+						if ( true == any_value_task_adc()){
+							temp_amb=get_value_task_adc();}
+
+						lm35_temp = (3.30 * 100 * temp_amb)/(4096);
+
+						displayCharPositionWrite(0,1);
+						snprintf(menu_str, sizeof(menu_str),"Tamb:%lu Tset:%lu ",lm35_temp,4/*aca agregar la temperatura seteada en menu  */);//p_task_menu_set_up_dta->set_point_temperatura);
+						displayStringWrite(menu_str);
+						//clock_tick ++ en el caso de setear un clock a mano
+						break;
+
+					case EV_NORMAL_01_SWITCH_MOTOR:
+						break;
+
+					default:
+
+						break;
+					}
 			}
-
 			break;
 
-		case ST_SYS_01_CAR_IN_ENTRANCE:
+		case ST_NORMAL_01_ALARM: // se detecto un rise de temperatura y se evalua si se mantiene
+			if (true == p_task_system_dta->flag){ // verifico que haya una task de system
 
-			if ((true == p_task_system_dta->flag) && (EV_SYS_01_PRINT_TICKET_BTN_ACTIVE == p_task_system_dta->event))
-			  {
+				switch(p_task_system_dta->event){
 
-				p_task_system_dta->flag = false;
-				put_event_task_actuator(EV_LED_XX_PULSE, ID_ACT_PRINTER);
-				p_task_system_dta->state = ST_SYS_01_WAITING_TICKET_REMOVAL;
-			  }
+					case EV_MEN_ENT_ACTIVE:
+						break;
+
+					case EV_NORMAL_01_FAILURE:
+						break;
+
+					case EV_NORMAL_01_ALARM_MONITOR:
+						break;
+
+					case EV_NORMAL_01_MONITOR:
+						break;
+
+					case EV_NORMAL_01_SWITCH_MOTOR:
+						break;
+
+					default:
+
+						break;
+					}
+			}
 			break;
+		case ST_NORMAL_01_FAILURE:
+			if (true == p_task_system_dta->flag){ // verifico que haya una task de system
 
-		case ST_SYS_01_WAITING_TICKET_REMOVAL:
+				switch(p_task_system_dta->event){
 
-			if ((true == p_task_system_dta->flag) && (EV_SYS_01_TICKET_PICKED_UP_ACTIVE == p_task_system_dta->event))
-			  {
-				p_task_system_dta->flag = false;
-				put_event_task_actuator(EV_LED_XX_BLINK, ID_ACT_BARRIER_UP);
-				p_task_system_dta->state =ST_SYS_01_LIFTING_BARRIER;
+					case EV_MEN_ENT_ACTIVE:
+						break;
 
-			  }
-			if ((true == p_task_system_dta->flag) && (EV_SYS_01_TICKET_NOT_TAKEN_ACTIVE== p_task_system_dta->event))
-			  {
-				p_task_system_dta->flag = false ;
-				p_task_system_dta->state =ST_SYS_01_CAR_IN_ENTRANCE;
-			  }
+					case EV_NORMAL_01_FAILURE:
+						break;
+
+					case EV_NORMAL_01_ALARM_MONITOR:
+						break;
+
+					case EV_NORMAL_01_MONITOR:
+						break;
+
+					case EV_NORMAL_01_SWITCH_MOTOR:
+						break;
+
+					default:
+
+					break;
+				}
+			}
 			break;
-
-		case ST_SYS_01_LIFTING_BARRIER:
-
-			if ((true == p_task_system_dta->flag) && (EV_SYS_01_BARRIER_UP_ACTIVE == p_task_system_dta->event))
-			  {
-				p_task_system_dta->flag = false;
-				put_event_task_actuator(EV_LED_XX_OFF, ID_ACT_BARRIER_UP);
-				p_task_system_dta->state =ST_SYS_01_BARRIER_UP;
-			  }
-
-			break;
-
-		case ST_SYS_01_BARRIER_UP:
-
-			if ((true == p_task_system_dta->flag) && (EV_SYS_01_CAR_ENTERED_ACTIVE == p_task_system_dta->event))
-			  {
-				p_task_system_dta->flag = false;
-				put_event_task_actuator(EV_LED_XX_BLINK, ID_ACT_BARRIER_DOWN);
-				p_task_system_dta->state =ST_SYS_01_LOWERING_BARRIER;
-			  }
-			if ((true == p_task_system_dta->flag) && (EV_SYS_01_CAR_ENTRYING_ACTIVE == p_task_system_dta->event))
-			 {
-				p_task_system_dta->flag = false;
-				p_task_system_dta->state = ST_SYS_01_BARRIER_UP;
-			 }
-			break;
-		case ST_SYS_01_LOWERING_BARRIER:
-
-			if ((true == p_task_system_dta->flag) && (EV_SYS_01_BARRIER_DOWN_ACTIVE == p_task_system_dta->event))
-			  {
-				p_task_system_dta->flag = false;
-				put_event_task_actuator(EV_LED_XX_OFF, ID_ACT_BARRIER_DOWN);
-				p_task_system_dta->state =ST_SYS_01_ENTRY_EMPTY;
-			  }
-
-			break;
-
 			/*********************************************************************************************/
-			case ST_SYS_XX_IDLE:
+		case ST_NORMAL_01_STANDBY:
+			if (true == p_task_system_dta->flag){ // verifico que haya una task de system
 
-				if ((true == p_task_system_dta->flag) && (EV_SYS_XX_ACTIVE == p_task_system_dta->event))
-				{
-					p_task_system_dta->flag = false;
-					put_event_task_actuator(EV_LED_XX_ON, ID_LED_A);
-					p_task_system_dta->state = ST_SYS_XX_ACTIVE;
+				switch(p_task_system_dta->event){
+
+					case EV_MEN_ENT_ACTIVE:
+						break;
+
+					case EV_NORMAL_01_FAILURE:
+						break;
+
+					case EV_NORMAL_01_ALARM_MONITOR:
+						break;
+
+					case EV_NORMAL_01_MONITOR:
+						break;
+
+					case EV_NORMAL_01_SWITCH_MOTOR:
+						break;
+
+					default:
+
+					break;
 				}
-
-				break;
-
-			case ST_SYS_XX_ACTIVE:
-
-				if ((true == p_task_system_dta->flag) && (EV_SYS_XX_IDLE == p_task_system_dta->event))
-				{
-					p_task_system_dta->flag = false;
-					put_event_task_actuator(EV_LED_XX_OFF, ID_LED_A);
-					p_task_system_dta->state = ST_SYS_XX_IDLE;
-				}
-
-				break;
-
+			}
 			default:
 
 				break;

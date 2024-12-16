@@ -35,8 +35,8 @@
  * @version	v1.0.0
  */
 
-#ifndef TASK_INC_TASK_SYSTEM_INTERFACE_H_
-#define TASK_INC_TASK_SYSTEM_INTERFACE_H_
+#ifndef TASK_INC_TASK_NORMAL_INTERFACE_H_
+#define TASK_INC_TASK_NORMAL_INTERFACE_H_
 
 /********************** CPP guard ********************************************/
 #ifdef __cplusplus
@@ -62,6 +62,6 @@ extern bool any_event_task_system(void);
 }
 #endif
 
-#endif /* TASK_INC_TASK_SYSTEM_INTERFACE_H_ */
+#endif /* TASK_INC_TASK_NORMAL_INTERFACE_H_ */
 
 /********************** end of file ******************************************/
