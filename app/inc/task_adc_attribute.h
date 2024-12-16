@@ -125,6 +125,7 @@ typedef struct
 /********************** external data declaration ****************************/
 extern task_menu_dta_t        task_menu_dta;
 extern task_menu_set_up_dta_t  task_menu_set_up_dta;
+extern uint32_t temp_amb;
 
 /********************** external functions declaration ***********************/
 
