@@ -43,15 +43,14 @@
 /* Demo includes. */
 #include "logger.h"
 #include "dwt.h"
-#include "task_adc_interface.h"
+
 /* Application & Tasks includes. */
 #include "board.h"
 #include "app.h"
+#include "display.h"
+#include "task_adc_interface.h"
 #include "task_menu_attribute.h"
 #include "task_menu_interface.h"
-
-#include "display.h"
-
 /********************** macros and definitions *******************************/
 #define G_TASK_MEN_CNT_INI			0ul
 #define G_TASK_MEN_TICK_CNT_INI		0ul
@@ -70,6 +69,8 @@ task_menu_dta_t task_menu_dta = {DEL_MEN_XX_MIN, ST_MAIN_MENU, EV_MEN_ENT_IDLE, 
 task_menu_set_up_dta_t task_menu_set_up= {0,0,0};
 
 task_sub_menu_dta_t task_sub_menu_dta ={0,0};
+
+uint32_t temp_amb=0;
 
 
 #define MENU_DTA_QTY	(sizeof(task_menu_dta)/sizeof(task_menu_dta_t))
@@ -132,10 +133,9 @@ void task_menu_update(void *parameters)
 {
 	task_menu_dta_t         *p_task_menu_dta;
 	task_sub_menu_dta_t     *p_task_sub_menu_dta;
-	float lm35_temp;
-	uint32_t lm35_temp_whole;
-	uint32_t lm35_temp_decimal;
-	uint32_t temp;
+	uint32_t lm35_temp;
+
+
 
 
 	bool b_time_update_required = false;
@@ -196,16 +196,12 @@ void task_menu_update(void *parameters)
 	            	  	  	      displayStringWrite("Ent/Nxt [*C]    ");
 
 	            	  			if ( true == any_value_task_adc()){
-	            	  				//VER QUE CADA TANTO TIRA CUALQUIER VALOR
+	            	  				temp_amb=get_value_task_adc();}
 
-	            	  			}
-	            	  			    temp=get_value_task_adc();
-		            	  			lm35_temp = (3.30 * 100 * (float)temp)/(4096);
-		            	  			lm35_temp_whole = (uint32_t)lm35_temp;
-
+		            	  			lm35_temp = (3.30 * 100 * temp_amb)/(4096);
 
 	            	  			  displayCharPositionWrite(0,1);
-	            	  			  snprintf(menu_str, sizeof(menu_str),"Tamb:%lu Tset:%lu ",(int)lm35_temp_whole,p_task_menu_set_up_dta->set_point_temperatura);
+	            	  			  snprintf(menu_str, sizeof(menu_str),"Tamb:%lu Tset:%lu ",lm35_temp,p_task_menu_set_up_dta->set_point_temperatura);
 	            	  			  displayStringWrite(menu_str);
 
 	            	    	  	  if ((true == p_task_menu_dta->flag) && (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event)){
