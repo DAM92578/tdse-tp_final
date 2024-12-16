@@ -88,6 +88,7 @@ volatile uint32_t g_task_menu_tick_cnt;
 task_menu_set_up_dta_t   *p_task_menu_set_up_dta;
 extern uint32_t temp_ambiente;
 
+
 /********************** external functions definition ************************/
 void task_menu_init(void *parameters)
 {
@@ -133,10 +134,8 @@ void task_menu_update(void *parameters)
 {
 	task_menu_dta_t         *p_task_menu_dta;
 	task_sub_menu_dta_t     *p_task_sub_menu_dta;
-	float lm35_temp;
-	uint32_t lm35_temp_whole;
-	uint32_t lm35_temp_decimal;
 
+	uint32_t lm35_temp;
 
 	bool b_time_update_required = false;
     char menu_str[16];
@@ -195,15 +194,14 @@ void task_menu_update(void *parameters)
 	            	  	  	      displayCharPositionWrite(0, 0);
 	            	  	  	      displayStringWrite("Ent/Nxt [*C]    ");
 
+	            	  			if ( true == any_value_task_adc()){
+	            	  				temp_amb=get_value_task_adc();}
 
-	            	  	  	      /* Print out: LM35 Temperature */
-	            	  			lm35_temp = (3.30 * 100 * (float)temp_ambiente)/(4096);
-	            	  			lm35_temp_whole = (uint32_t)lm35_temp;
-	            	  			//lm35_temp_decimal = (uint32_t)((lm35_temp - lm35_temp_whole) * 10);//10000 (int)lm35_temp_decimal,
+		            	  			lm35_temp = (3.30 * 100 * temp_amb)/(4096);
 
 	            	  			  displayCharPositionWrite(0,1);
-	            	  			  snprintf(menu_str, sizeof(menu_str),"Tamb:%lu Tset:%lu ",(int)lm35_temp_whole,p_task_menu_set_up_dta->set_point_temperatura);
-	            	  			//%4d.%01dCTset%lu Tamb%lu.%lu Tset%luC
+	            	  			  snprintf(menu_str, sizeof(menu_str),"Tamb:%lu Tset:%lu ",lm35_temp,p_task_menu_set_up_dta->set_point_temperatura);
+
 	            	  			  displayStringWrite(menu_str);
 
 	            	    	  	  if ((true == p_task_menu_dta->flag) && (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event)){
