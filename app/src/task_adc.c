@@ -90,6 +90,7 @@ void task_adc_update(void *parameters){
 		else{
 
 			 averaged = averaged / AVERAGER_SIZE;
+
 			 //temp_ambiente= (averaged);//->pasar dato por cola.
 			 put_value_task_adc(averaged);
 			 averaged =0;

@@ -74,6 +74,26 @@ extern "C" {
 #define LED_A_ON		GPIO_PIN_SET
 #define LED_A_OFF		GPIO_PIN_RESET
 
+#define LED_B_PIN		C10_Pin
+#define LED_B_PORT		C10_GPIO_Port
+#define LED_B_ON		GPIO_PIN_SET
+#define LED_B_OFF		GPIO_PIN_RESET
+
+#define BUZZER_A_PIN	C8_Pin
+#define BUZZER_A_PORT	C8_GPIO_Port
+#define BUZZER_A_ON		GPIO_PIN_SET
+#define BUZZER_A_OFF	GPIO_PIN_RESET
+
+#define AIRE_A_PIN		C9_Pin
+#define AIRE_A_PORT		C9_GPIO_Port
+#define AIRE_A_ON		GPIO_PIN_SET
+#define AIRE_A_OFF		GPIO_PIN_RESET
+
+#define AIRE_B_PIN      C6_Pin
+#define AIRE_B_PORT     C6_GPIO_Port
+#define AIRE_B_ON		GPIO_PIN_SET
+#define AIRE_B_OFF		GPIO_PIN_RESET
+
 #endif/* STM32 Nucleo Boards - 144 Pins */
 
 #if ((BOARD == NUCLEO_F429ZI) || (BOARD == NUCLEO_F439ZI) || (BOARD == NUCLEO_F413ZH))

@@ -86,6 +86,7 @@ const char *p_task_menu_ 		= "Non-Blocking & Update By Time Code";
 uint32_t g_task_menu_cnt;
 volatile uint32_t g_task_menu_tick_cnt;
 task_menu_set_up_dta_t   *p_task_menu_set_up_dta;
+extern uint32_t temp_ambiente;
 
 
 /********************** external functions definition ************************/
@@ -133,10 +134,8 @@ void task_menu_update(void *parameters)
 {
 	task_menu_dta_t         *p_task_menu_dta;
 	task_sub_menu_dta_t     *p_task_sub_menu_dta;
+
 	uint32_t lm35_temp;
-
-
-
 
 	bool b_time_update_required = false;
     char menu_str[16];
@@ -202,6 +201,7 @@ void task_menu_update(void *parameters)
 
 	            	  			  displayCharPositionWrite(0,1);
 	            	  			  snprintf(menu_str, sizeof(menu_str),"Tamb:%lu Tset:%lu ",lm35_temp,p_task_menu_set_up_dta->set_point_temperatura);
+
 	            	  			  displayStringWrite(menu_str);
 
 	            	    	  	  if ((true == p_task_menu_dta->flag) && (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event)){

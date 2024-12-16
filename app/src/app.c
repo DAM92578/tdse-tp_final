@@ -47,7 +47,10 @@
 #include "board.h"
 #include "task_sensor.h"
 #include "task_menu.h"
+
+#include "task_actuator.h"
 #include "task_adc.h"
+
 
 /********************** macros and definitions *******************************/
 #define G_APP_CNT_INI		0ul
@@ -72,7 +75,9 @@ typedef struct {
 const task_cfg_t task_cfg_list[]	= {
 		{task_sensor_init,	task_sensor_update, 	NULL},
 		{task_menu_init,	task_menu_update, 		NULL},
-		{task_adc_init, task_adc_update, NULL}
+		{task_actuator_init,	task_actuator_update, 	NULL},
+		{task_adc_init, task_adc_update, NULL},
+
 };
 
 #define TASK_QTY	(sizeof(task_cfg_list)/sizeof(task_cfg_t))
