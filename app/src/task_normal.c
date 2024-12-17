@@ -67,12 +67,14 @@
 #define DEL_SYS_XX_MIN				0ul
 #define DEL_SYS_XX_MED				50ul
 #define DEL_SYS_XX_MAX				500ul
-#define MAX_TICK_ALARM				2000ul
 
+////////////////////////// Estos son placeholders los tiene que levantar del set up menu ////////////////
+#define MAX_TICK_ALARM				2000ul
+#define MAX_TICK_SWITCH				10000ul
 /********************** internal data declaration ****************************/
 
 uint32_t tempAmb = 0;
-
+uint32_t counter_tick= 0;
 
 task_system_dta_t task_system_dta =
 	{DEL_SYS_XX_MIN, ST_NORMAL_01_MONITOR , EV_NORMAL_01_MONITOR, false};
@@ -169,7 +171,9 @@ void task_system_update(void *parameters)
 		{
 		/********************************************************************************************/
 		case ST_NORMAL_01_MONITOR:
-			if (true == p_task_system_dta->flag){ // verifico que haya una task de system
+			// verifico que haya una task de system
+			if (true == p_task_system_dta->flag)
+			{
 
 				switch(p_task_system_dta->event){
 
@@ -188,17 +192,19 @@ void task_system_update(void *parameters)
 
 						break;
 
-					case EV_NORMAL_01_FAILURE:
-					case EV_NORMAL_01_ALARM_MONITOR: //Entra en estado de alarma
+					case EV_NORMAL_01_FAILURE: //Entra en estado de alarma
 						 //comienza el tick de alarma y pasa al estado de alarma
+						//guardo el tick anterior;
+						counter_tick = task_system_dta->tick;
 						task_system_dta->tick = MAX_TICK_ALARM;
-						p_task_system_dta->state = ST_NORMAL_01_ALARM;
+						p_task_system_dta->state = ST_NORMAL_01_FAILURE;
 
 						//da un mensaje al usuario de estado de alarma ? esto validar
 						//displayCharPositionWrite(0,1);
 						//displayStringWrite("UNUSUAL TEMPERATURE");
 						break;
-
+				/*
+				 ////////////////////// Aca si tenemos el clock que pueda levantar este evento, si no se hace con ticks /////////////////////
 					case EV_NORMAL_01_SWITCH_MOTOR: // si entra aca desde el st_monitor es porque se termino el tiempo cambio de motores
 						//resetea el clock de cambio de motor
 						if (HAL_GPIO_ReadPin(LED_B_PORT, LED_B_PIN) == LED_B_ON ){ //si el aire B esta prendido
@@ -217,21 +223,61 @@ void task_system_update(void *parameters)
 							put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_A);
 						}
 						break;
+					*/
 
 					case EV_NORMAL_01_MONITOR:
+					/*
+						///////////////////////////////////// MANEJO DE DISPLAY ////////////////////////////////////////
 						displayCharPositionWrite(0, 0);
 						displayStringWrite("Time: 0:5:23 Tmicro: 23°C"); /// aca levantar la temperatura y el clock
 
 						displayCharPositionWrite(0,1);
 						displayStringWrite("Tamb: 0:5:23 Tset: 23°C");
 						//clock_tick ++ en el caso de setear un clock a mano
-						if (HAL_GPIO_ReadPin(LED_B_PORT, LED_B_PIN) == LED_B_ON ){ //si el aire B esta prendido
-							put_event_task_actuator(EV_LED_XX_BLINK,ID_AIRE_B); //hago parpadear la luz testigo de B
+					*/
+						//////////////////////// BLINK de leds y check counter //////////////
+						if (task_system_dta->tick > 0){// si el tiempo de operacion no termino
+							if (HAL_GPIO_ReadPin(LED_B_PORT, LED_B_PIN) == LED_B_ON){ //si el aire B esta prendido
+								put_event_task_actuator(EV_LED_XX_BLINK,ID_AIRE_B); //hago parpadear la luz testigo de B
 
+							}
+							else{
+								put_event_task_actuator(EV_LED_XX_BLINK,ID_AIRE_A);
+							}
+							task_system_dta->tick --;
 						}
-						else{
-							put_event_task_actuator(EV_LED_XX_BLINK,ID_AIRE_A);
+						else {
+							//hago el switch de motores y reinicio el tiempo al seteado por el usuario
+							if (HAL_GPIO_ReadPin(LED_B_PORT, LED_B_PIN) == LED_B_ON ){ //si el aire B esta prendido
+
+								put_event_task_actuator(EV_LED_XX_OFF,ID_LED_B);
+								put_event_task_actuator(EV_LED_XX_ON,ID_LED_A);
+
+								put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_B);
+								put_event_task_actuator(EV_LED_XX_BLINK,ID_AIRE_A);
+							}
+							else{
+								put_event_task_actuator(EV_LED_XX_ON,ID_LED_B);
+								put_event_task_actuator(EV_LED_XX_OFF,ID_LED_A);
+
+								put_event_task_actuator(EV_LED_XX_BLINK,ID_AIRE_B);
+								put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_A);
+							}
+							task_system_dta->tick = MAX_TICK_SWITCH; ///ACA REEMPLAZAR POR EL QUE LEVANTA DEL USUARIO
 						}
+
+						break;
+					case EV_NORMAL_O1_OFF:
+						//apago todo y entro a estado de off;
+						// Titilo las luces de usuario y apago todo lo demas //podemos comentar todo y decidir que el sistema ignore el modo manual en estado de alarma
+						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_A);
+						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_B);
+
+						put_event_task_actuator(EV_LED_XX_OFF,ID_BUZZER_A);
+						put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_A);
+						put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_B);
+						//cambio a estado standby
+						p_task_system_dta->state = ST_NORMAL_01_OFF;
 						break;
 
 					default:
@@ -241,7 +287,7 @@ void task_system_update(void *parameters)
 			}
 			break;
 
-		case ST_NORMAL_01_ALARM: // se detecto un rise de temperatura y se evalua si se mantiene
+		case ST_NORMAL_01_FAILURE: // se detecto un rise de temperatura y se evalua si se mantiene
 			if (true == p_task_system_dta->flag){ // verifico que haya una task de system
 
 				switch(p_task_system_dta->event){
@@ -260,17 +306,56 @@ void task_system_update(void *parameters)
 						break;
 
 					case EV_NORMAL_01_FAILURE:
+						if(p_task_system_dta->tick == 0){
+							// prendo el buzzer
+							put_event_task_actuator(EV_LED_XX_PULSE,ID_BUZZER_A);
+							//switch de motores
+							if (HAL_GPIO_ReadPin(LED_B_PORT, LED_B_PIN) == LED_B_ON ){ //si el aire B esta prendido
+
+								put_event_task_actuator(EV_LED_XX_OFF,ID_LED_B);
+								put_event_task_actuator(EV_LED_XX_ON,ID_LED_A);
+
+								put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_B);
+								put_event_task_actuator(EV_LED_XX_BLINK,ID_AIRE_A);
+							}
+							else{
+								put_event_task_actuator(EV_LED_XX_ON,ID_LED_B);
+								put_event_task_actuator(EV_LED_XX_OFF,ID_LED_A);
+
+								put_event_task_actuator(EV_LED_XX_BLINK,ID_AIRE_B);
+								put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_A);
+							}
+							task_system_dta->tick = MAX_TICK_SWITCH; ///ACA REEMPLAZAR POR EL QUE LEVANTA DEL USUARIO
+							task_system_dta->state = ST_NORMAL_01_MONITOR;
+
+						}
+						else{
+							p_task_system_dta->tick --;
+						}
 						break;
 
-					case EV_NORMAL_01_ALARM_MONITOR:
-						break;
 
 					case EV_NORMAL_01_MONITOR: // baja la temperatura y se vuelve al estado normal de funcionamiento
+						task_system_dta->tick = counter_tick; //vuelvo a dejar el counter donde estaba antes de entrar a falla
 						p_task_system_dta->state = ST_NORMAL_01_MONITOR;
 						break;
 
 					case EV_NORMAL_01_SWITCH_MOTOR://aca no deberia entrar en estado de alarma
 						break;
+
+					case EV_NORMAL_O1_OFF:
+						//apago todo y entro a estado de off;
+						// Titilo las luces de usuario y apago todo lo demas //podemos comentar todo y decidir que el sistema ignore el modo manual en estado de alarma
+						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_A);
+						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_B);
+
+						put_event_task_actuator(EV_LED_XX_OFF,ID_BUZZER_A);
+						put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_A);
+						put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_B);
+						//cambio a estado standby
+						p_task_system_dta->state = ST_NORMAL_01_OFF;
+						break;
+
 
 					default:
 
@@ -278,57 +363,55 @@ void task_system_update(void *parameters)
 					}
 			}
 			break;
-		case ST_NORMAL_01_FAILURE:
-			if (true == p_task_system_dta->flag){ // verifico que haya una task de system
 
-				switch(p_task_system_dta->event){
-
-					case EV_NORMAL_01_NEX_ACTIVE:
-						break;
-
-					case EV_NORMAL_01_ENT_ACTIVE:
-						break;
-
-					case EV_NORMAL_01_FAILURE:
-						break;
-
-					case EV_NORMAL_01_ALARM_MONITOR:
-						break;
-
-					case EV_NORMAL_01_MONITOR:
-						break;
-
-					case EV_NORMAL_01_SWITCH_MOTOR:
-						break;
-
-					default:
-
-					break;
-				}
-			}
-			break;
 			/*********************************************************************************************/
 		case ST_NORMAL_01_STANDBY:
 			if (true == p_task_system_dta->flag){ // verifico que haya una task de system
 
 				switch(p_task_system_dta->event){
 
-					case EV_NORMAL_01_NEX_ACTIVE:
-						break;
-
+					case EV_NORMAL_01_NEX_ACTIVE: // sigue en estado de setup
 					case EV_NORMAL_01_ENT_ACTIVE:
+						put_event_task_actuator(EV_LED_XX_BLINK,ID_LED_A);
+						put_event_task_actuator(EV_LED_XX_BLINK,ID_LED_B);
 						break;
 
-					case EV_NORMAL_01_FAILURE:
+					case EV_NORMAL_01_FAILURE: // no hago nada ya que se esta configurando los parametros de failure
+						put_event_task_actuator(EV_LED_XX_BLINK,ID_LED_A);
+						put_event_task_actuator(EV_LED_XX_BLINK,ID_LED_B);
 						break;
 
-					case EV_NORMAL_01_ALARM_MONITOR:
+					case EV_NORMAL_01_MONITOR: //esto puede ser es evento ON tambien hay que chequear si se puede obviar
+						//reinicia el programa prendo el motor A y las luces correspondientes
+						put_event_task_actuator(EV_LED_XX_ON,ID_LED_A);
+						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_B);
+
+						put_event_task_actuator(EV_LED_XX_OFF,ID_BUZZER_A);
+
+						put_event_task_actuator(EV_LED_XX_BLINK,ID_AIRE_A);
+						put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_B);
+						//cambio a estado standby
+						task_system_dta->tick = MAX_TICK_SWITCH;
+						p_task_system_dta->state = ST_NORMAL_01_MONITOR;
+
 						break;
 
-					case EV_NORMAL_01_MONITOR:
-						break;
-
+					/*
 					case EV_NORMAL_01_SWITCH_MOTOR:
+						break;
+					*/
+
+					case EV_NORMAL_O1_OFF:
+						//apago todo y entro a estado de off;
+						// Titilo las luces de usuario y apago todo lo demas //podemos comentar todo y decidir que el sistema ignore el modo manual en estado de alarma
+						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_A);
+						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_B);
+
+						put_event_task_actuator(EV_LED_XX_OFF,ID_BUZZER_A);
+						put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_A);
+						put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_B);
+						//cambio a estado standby
+						p_task_system_dta->state = ST_NORMAL_01_OFF;
 						break;
 
 					default:
