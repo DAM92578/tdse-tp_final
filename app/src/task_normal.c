@@ -67,6 +67,7 @@
 #define DEL_SYS_XX_MIN				0ul
 #define DEL_SYS_XX_MED				50ul
 #define DEL_SYS_XX_MAX				500ul
+#define MAX_TICK_ALARM				2000ul
 
 /********************** internal data declaration ****************************/
 
@@ -188,24 +189,49 @@ void task_system_update(void *parameters)
 						break;
 
 					case EV_NORMAL_01_FAILURE:
+					case EV_NORMAL_01_ALARM_MONITOR: //Entra en estado de alarma
+						 //comienza el tick de alarma y pasa al estado de alarma
+						task_system_dta->tick = MAX_TICK_ALARM;
+						p_task_system_dta->state = ST_NORMAL_01_ALARM;
 
-
+						//da un mensaje al usuario de estado de alarma ? esto validar
+						//displayCharPositionWrite(0,1);
+						//displayStringWrite("UNUSUAL TEMPERATURE");
 						break;
 
-					case EV_NORMAL_01_ALARM_MONITOR:
+					case EV_NORMAL_01_SWITCH_MOTOR: // si entra aca desde el st_monitor es porque se termino el tiempo cambio de motores
+						//resetea el clock de cambio de motor
+						if (HAL_GPIO_ReadPin(LED_B_PORT, LED_B_PIN) == LED_B_ON ){ //si el aire B esta prendido
 
+							put_event_task_actuator(EV_LED_XX_OFF,ID_LED_B);
+							put_event_task_actuator(EV_LED_XX_ON,ID_LED_A);
+
+							put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_B);
+							put_event_task_actuator(EV_LED_XX_BLINK,ID_AIRE_A);
+						}
+						else{
+							put_event_task_actuator(EV_LED_XX_ON,ID_LED_B);
+							put_event_task_actuator(EV_LED_XX_OFF,ID_LED_A);
+
+							put_event_task_actuator(EV_LED_XX_BLINK,ID_AIRE_B);
+							put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_A);
+						}
 						break;
 
 					case EV_NORMAL_01_MONITOR:
-						 displayCharPositionWrite(0, 0);
-						 displayStringWrite("Time: 0:5:23 Tmicro: 23°C"); /// aca levantar la temperatura y el clock
+						displayCharPositionWrite(0, 0);
+						displayStringWrite("Time: 0:5:23 Tmicro: 23°C"); /// aca levantar la temperatura y el clock
 
 						displayCharPositionWrite(0,1);
 						displayStringWrite("Tamb: 0:5:23 Tset: 23°C");
 						//clock_tick ++ en el caso de setear un clock a mano
-						break;
+						if (HAL_GPIO_ReadPin(LED_B_PORT, LED_B_PIN) == LED_B_ON ){ //si el aire B esta prendido
+							put_event_task_actuator(EV_LED_XX_BLINK,ID_AIRE_B); //hago parpadear la luz testigo de B
 
-					case EV_NORMAL_01_SWITCH_MOTOR:
+						}
+						else{
+							put_event_task_actuator(EV_LED_XX_BLINK,ID_AIRE_A);
+						}
 						break;
 
 					default:
@@ -220,11 +246,17 @@ void task_system_update(void *parameters)
 
 				switch(p_task_system_dta->event){
 
-					case EV_NORMAL_01_NEX_ACTIVE:
-						//sigue en set up menu asi que no hago nada;
-						break;
-
+					case EV_NORMAL_01_NEX_ACTIVE: //en estado de alarma si se quieren cambiar los parametros de operacion
 					case EV_NORMAL_01_ENT_ACTIVE:
+						// Titilo las luces de usuario y apago todo lo demas //podemos comentar todo y decidir que el sistema ignore el modo manual en estado de alarma
+						put_event_task_actuator(EV_LED_XX_BLINK,ID_LED_A);
+						put_event_task_actuator(EV_LED_XX_BLINK,ID_LED_B);
+
+						put_event_task_actuator(EV_LED_XX_OFF,ID_BUZZER_A);
+						put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_A);
+						put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_B);
+						//cambio a estado standby
+						p_task_system_dta->state = ST_NORMAL_01_STANDBY;
 						break;
 
 					case EV_NORMAL_01_FAILURE:
@@ -233,10 +265,11 @@ void task_system_update(void *parameters)
 					case EV_NORMAL_01_ALARM_MONITOR:
 						break;
 
-					case EV_NORMAL_01_MONITOR:
+					case EV_NORMAL_01_MONITOR: // baja la temperatura y se vuelve al estado normal de funcionamiento
+						p_task_system_dta->state = ST_NORMAL_01_MONITOR;
 						break;
 
-					case EV_NORMAL_01_SWITCH_MOTOR:
+					case EV_NORMAL_01_SWITCH_MOTOR://aca no deberia entrar en estado de alarma
 						break;
 
 					default:
