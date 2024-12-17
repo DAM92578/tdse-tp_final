@@ -67,7 +67,7 @@ typedef enum task_system_ev {	EV_NORMAL_01_MONITOR,
 								EV_NORMAL_01_SWITCH_MOTOR,
 								EV_NORMAL_01_NEX_ACTIVE,
 								EV_NORMAL_01_ENT_ACTIVE,
-								EV_NORMAL_O1_OFF,
+								EV_NORMAL_01_OFF,
 												} task_system_ev_t;
 
 /* State of Task System */

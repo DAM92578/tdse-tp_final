@@ -281,7 +281,7 @@ void task_normal_update(void *parameters)
 						}
 
 						break;
-					case EV_NORMAL_O1_OFF:
+					case EV_NORMAL_01_OFF:
 						//apago todo y entro a estado de off;
 						// Titilo las luces de usuario y apago todo lo demas //podemos comentar todo y decidir que el sistema ignore el modo manual en estado de alarma
 						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_A);
@@ -358,7 +358,7 @@ void task_normal_update(void *parameters)
 					case EV_NORMAL_01_SWITCH_MOTOR://aca no deberia entrar en estado de alarma
 						break;
 
-					case EV_NORMAL_O1_OFF:
+					case EV_NORMAL_01_OFF:
 						//apago todo y entro a estado de off;
 						// Titilo las luces de usuario y apago todo lo demas //podemos comentar todo y decidir que el sistema ignore el modo manual en estado de alarma
 						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_A);
@@ -416,7 +416,7 @@ void task_normal_update(void *parameters)
 						break;
 					*/
 
-					case EV_NORMAL_O1_OFF:
+					case EV_NORMAL_01_OFF:
 						//apago todo y entro a estado de off;
 						// Titilo las luces de usuario y apago todo lo demas //podemos comentar todo y decidir que el sistema ignore el modo manual en estado de alarma
 						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_A);

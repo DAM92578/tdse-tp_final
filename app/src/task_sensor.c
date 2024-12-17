@@ -48,8 +48,10 @@
 #include "board.h"
 #include "app.h"
 #include "task_sensor_attribute.h"
+
 #include "task_normal_attribute.h"
 #include "task_normal_interface.h"
+
 #include "task_menu_attribute.h"
 #include "task_menu_interface.h"
 
@@ -68,19 +70,18 @@ const task_sensor_cfg_t task_sensor_cfg_list[] = {
 		EV_MEN_ENT_IDLE,  EV_MEN_ENT_ACTIVE},
 	{ID_BTN_NEX,  BTN_NEX_PORT,  BTN_NEX_PIN,  BTN_NEX_PRESSED, DEL_BTN_XX_MAX,
 		EV_MEN_NEX_IDLE,  EV_MEN_NEX_ACTIVE},
-	/*
 	{ID_BTN_ON,  BTN_ON_PORT,  BTN_ON_PIN,  BTN_ON_PRESSED, DEL_BTN_XX_MAX,
-		EV_MEN_STANDBY,  EV_MEN_STANDBY},
+			EV_NORMAL_01_OFF,  EV_NORMAL_01_OFF},
 	{ID_SWITCH_OFF, SWITCH_OFF_PORT,  SWITCH_OFF_PIN,  SWITCH_OFF_PRESSED, DEL_BTN_XX_MAX,
 		EV_NORMAL_01_OFF,  EV_NORMAL_01_MONITOR},
 	{ID_SWITCH_AIRE_A,  SWITCH_AIRE_A_PORT,  SWITCH_AIRE_A_PIN,  SWITCH_AIRE_A_PRESSED, DEL_BTN_XX_MAX,
 		EV_MEN_NEX_IDLE,  EV_MEN_NEX_ACTIVE},
-	{ID_SWITCH_AIRE_B,  SWITCH_AIRE_B_PORT,  SWITCH_AIRE_B_PIN,  SWITCH_AIRE_B_PRESSED, SWITCH_AIRE_B_XX_MAX,
+	{ID_SWITCH_AIRE_B,  SWITCH_AIRE_B_PORT,  SWITCH_AIRE_B_PIN,  SWITCH_AIRE_B_PRESSED, DEL_BTN_XX_MAX,
 		EV_MEN_NEX_IDLE,  EV_MEN_NEX_ACTIVE},
 	{ID_SWITCH_FAILURE,  SWITCH_FAILURE_PORT,  SWITCH_FAILURE_PIN,  SWITCH_FAILURE_PRESSED, DEL_BTN_XX_MAX,
 		EV_MEN_NEX_IDLE,  EV_MEN_NEX_ACTIVE},
 
-	*/
+
 };
 
 #define SENSOR_CFG_QTY	(sizeof(task_sensor_cfg_list)/sizeof(task_sensor_cfg_t))
