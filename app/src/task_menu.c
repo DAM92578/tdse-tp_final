@@ -66,7 +66,8 @@
 /********************** internal data declaration ****************************/
 task_menu_dta_t task_menu_dta = {DEL_MEN_XX_MIN, ST_MAIN_MENU, EV_MEN_ENT_IDLE, false};
 
-task_menu_set_up_dta_t task_menu_set_up= {0,0,0};
+//task_menu_set_up_dta_t task_menu_set_up= {0,0,0};
+extern task_menu_set_up_dta_t  task_menu_set_up;
 
 task_sub_menu_dta_t task_sub_menu_dta ={0,0};
 
@@ -85,7 +86,7 @@ const char *p_task_menu_ 		= "Non-Blocking & Update By Time Code";
 /********************** external data declaration ****************************/
 uint32_t g_task_menu_cnt;
 volatile uint32_t g_task_menu_tick_cnt;
-task_menu_set_up_dta_t   *p_task_menu_set_up_dta;
+task_menu_set_up_dta_t   *p_task_menu_set_up_dta = &task_menu_set_up;
 extern uint32_t temp_ambiente;
 
 
@@ -189,7 +190,7 @@ void task_menu_update(void *parameters)
 			switch (p_task_menu_dta->state)
 			{
 				case ST_MAIN_MENU:
-	            	  	  	      p_task_menu_set_up_dta = & task_menu_set_up;
+	            	  	  	      //p_task_menu_set_up_dta = & task_menu_set_up;
 
 	            	  	  	      displayCharPositionWrite(0, 0);
 	            	  	  	      displayStringWrite("Ent/Nxt [*C]    ");
@@ -212,7 +213,7 @@ void task_menu_update(void *parameters)
 	            	  	  	  	  break;
 
 				case ST_01_MENU:
-					             p_task_menu_set_up_dta = & task_menu_set_up;
+					             //p_task_menu_set_up_dta = & task_menu_set_up;
 
 					 	 	 	 displayCharPositionWrite(0, 0);
 					 	 	 	 displayStringWrite("   Enter/Next    ");
@@ -275,10 +276,10 @@ void task_menu_update(void *parameters)
 								 				if (p_task_sub_menu_dta->sub_menu_2 > MENU_2_TIEMPO_CONMUTA_FALLA_MAX){
 								 	 		 		p_task_sub_menu_dta->sub_menu_2=0;}
 
-								 				p_task_menu_set_up_dta->tiempo_conmuta_falla=p_task_sub_menu_dta->sub_menu_2;
+								 				p_task_menu_set_up_dta->tiempo_conmuta=p_task_sub_menu_dta->sub_menu_2;
 
 								 			    displayCharPositionWrite(0, 1);
-								 			    snprintf(menu_str, sizeof(menu_str), "Tiempo Conm: %lu", (p_task_menu_set_up_dta->tiempo_conmuta_falla));
+								 			    snprintf(menu_str, sizeof(menu_str), "Tiempo Conm: %lu", (p_task_menu_set_up_dta->tiempo_conmuta));
 								 				displayStringWrite(menu_str);
 								 	 	  break;
 

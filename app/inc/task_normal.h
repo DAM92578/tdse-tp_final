@@ -29,14 +29,14 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @file   : task_system_interface.h
+ * @file   : task_system.h
  * @date   : Set 26, 2023
  * @author : Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>
  * @version	v1.0.0
  */
 
-#ifndef TASK_INC_TASK_NORMAL_INTERFACE_H_
-#define TASK_INC_TASK_NORMAL_INTERFACE_H_
+#ifndef TASK_INC_TASK_NORMAL_H_
+#define TASK_INC_TASK_NORMAL_H_
 
 /********************** CPP guard ********************************************/
 #ifdef __cplusplus
@@ -50,18 +50,18 @@ extern "C" {
 /********************** typedef **********************************************/
 
 /********************** external data declaration ****************************/
+extern uint32_t g_task_system_cnt;
+extern volatile uint32_t g_task_system_tick_cnt;
 
 /********************** external functions declaration ***********************/
-extern void init_queue_event_task_system(void);
-extern void put_event_task_normal(task_system_ev_t event);
-extern task_system_ev_t get_event_task_system(void);
-extern bool any_event_task_system(void);
+extern void task_normal_init(void *parameters);
+extern void task_normal_update(void *parameters);
 
 /********************** End of CPP guard *************************************/
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* TASK_INC_TASK_NORMAL_INTERFACE_H_ */
+#endif /* TASK_INC_TASK_SYSTEM_H_ */
 
 /********************** end of file ******************************************/

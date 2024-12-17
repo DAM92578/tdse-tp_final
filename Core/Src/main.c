@@ -29,6 +29,7 @@
 
 /* Application includes. */
 #include "app.h"
+#include "task_menu_attribute.h"
 
 /* USER CODE END Includes */
 
@@ -67,6 +68,8 @@ static void MX_ADC1_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 extern void initialise_monitor_handles(void);
+
+task_menu_set_up_dta_t task_menu_set_up = {0,0,0};
 
 /* USER CODE END 0 */
 

@@ -48,6 +48,8 @@
 #include "board.h"
 #include "app.h"
 #include "task_sensor_attribute.h"
+#include "task_normal_attribute.h"
+#include "task_normal_interface.h"
 #include "task_menu_attribute.h"
 #include "task_menu_interface.h"
 
@@ -191,6 +193,9 @@ void task_sensor_update(void *parameters)
 					{
 						p_task_sensor_dta->state = ST_BTN_XX_FALLING;
 						p_task_sensor_dta->tick = p_task_sensor_cfg->tick_max;
+					}
+					else{
+						put_event_task_system(EV_NORMAL_01_MONITOR);
 					}
 
 					break;

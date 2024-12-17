@@ -111,11 +111,8 @@ typedef struct
 } task_sub_menu_dta_t;
 
 
-
-
-
 typedef struct
-{	uint32_t       tiempo_conmuta_falla;
+{	uint32_t       tiempo_conmuta;
 	uint32_t       tiempo_reporta_falla;
 	uint32_t	   set_point_temperatura;
 
@@ -124,7 +121,7 @@ typedef struct
 
 /********************** external data declaration ****************************/
 extern task_menu_dta_t        task_menu_dta;
-extern task_menu_set_up_dta_t  task_menu_set_up_dta;
+//extern task_menu_set_up_dta_t  task_menu_set_up_dta;
 
 /********************** external functions declaration ***********************/
 

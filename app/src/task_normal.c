@@ -58,6 +58,7 @@
 #include "task_actuator_interface.h"
 
 #include "task_menu_interface.h"
+#include "task_menu_attribute.h"
 
 /********************** macros and definitions *******************************/
 #define G_TASK_SYS_CNT_INI			0ul
@@ -90,8 +91,12 @@ const char *p_task_system_ 		= "Non-Blocking & Update By Time Code";
 uint32_t g_task_system_cnt;
 volatile uint32_t g_task_system_tick_cnt;
 
+extern task_menu_set_up_dta_t task_menu_set_up;
+
+task_menu_set_up_dta_t   *p_set_up_dta = &task_menu_set_up;
+
 /********************** external functions definition ************************/
-void task_system_init(void *parameters)
+void task_normal_init(void *parameters)
 {
 	task_system_dta_t 	*p_task_system_dta;
 	task_system_st_t	state;
@@ -125,10 +130,14 @@ void task_system_init(void *parameters)
 	g_task_system_tick_cnt = G_TASK_SYS_TICK_CNT_INI;
 }
 
-void task_system_update(void *parameters)
+void task_normal_update(void *parameters)
 {
 	task_system_dta_t *p_task_system_dta;
 	bool b_time_update_required = false;
+
+	uint32_t lm35_temp;
+    char display_str[16];
+    uint32_t temp_amb;
 
 	/* Update Task System Counter */
 	g_task_system_cnt++;
@@ -171,7 +180,7 @@ void task_system_update(void *parameters)
 		/********************************************************************************************/
 		case ST_NORMAL_01_MONITOR:
 			// verifico que haya una task de system
-			if (true == p_task_system_dta->flag)
+			//if (true == p_task_system_dta->flag)
 			{
 
 				switch(p_task_system_dta->event){
@@ -195,7 +204,7 @@ void task_system_update(void *parameters)
 						 //comienza el tick de alarma y pasa al estado de alarma
 						//guardo el tick anterior;
 						counter_tick = p_task_system_dta->tick;
-						p_task_system_dta->tick = MAX_TICK_ALARM;
+						p_task_system_dta->tick = p_set_up_dta->tiempo_reporta_falla;
 						p_task_system_dta->state = ST_NORMAL_01_FAILURE;
 
 						//da un mensaje al usuario de estado de alarma ? esto validar
@@ -225,15 +234,21 @@ void task_system_update(void *parameters)
 					*/
 
 					case EV_NORMAL_01_MONITOR:
-					/*
+
 						///////////////////////////////////// MANEJO DE DISPLAY ////////////////////////////////////////
 						displayCharPositionWrite(0, 0);
-						displayStringWrite("Time: 0:5:23 Tmicro: 23°C"); /// aca levantar la temperatura y el clock
+						displayStringWrite("Ent/Nxt [*C]    ");
 
-						displayCharPositionWrite(0,1);
-						displayStringWrite("Tamb: 0:5:23 Tset: 23°C");
-						//clock_tick ++ en el caso de setear un clock a mano
-					*/
+						if ( true == any_value_task_adc()){
+							temp_amb=get_value_task_adc();}
+
+						lm35_temp = (3.30 * 100 * temp_amb)/(4096);
+
+						 displayCharPositionWrite(0,1);
+						 snprintf(display_str, sizeof(display_str),"Tamb:%lu Tset:%lu ",lm35_temp,p_set_up_dta->set_point_temperatura);
+
+						 displayStringWrite(display_str);
+
 						//////////////////////// BLINK de leds y check counter //////////////
 						if (p_task_system_dta->tick > 0){// si el tiempo de operacion no termino
 							if (HAL_GPIO_ReadPin(LED_B_PORT, LED_B_PIN) == LED_B_ON){ //si el aire B esta prendido
@@ -262,7 +277,7 @@ void task_system_update(void *parameters)
 								put_event_task_actuator(EV_LED_XX_BLINK,ID_AIRE_B);
 								put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_A);
 							}
-							p_task_system_dta->tick = MAX_TICK_SWITCH; ///ACA REEMPLAZAR POR EL QUE LEVANTA DEL USUARIO
+							p_task_system_dta->tick = p_set_up_dta->tiempo_conmuta;
 						}
 
 						break;
@@ -324,7 +339,7 @@ void task_system_update(void *parameters)
 								put_event_task_actuator(EV_LED_XX_BLINK,ID_AIRE_B);
 								put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_A);
 							}
-							p_task_system_dta->tick = MAX_TICK_SWITCH; ///ACA REEMPLAZAR POR EL QUE LEVANTA DEL USUARIO
+							p_task_system_dta->tick = p_set_up_dta->tiempo_conmuta;
 							p_task_system_dta->state = ST_NORMAL_01_MONITOR;
 
 						}
@@ -335,6 +350,7 @@ void task_system_update(void *parameters)
 
 
 					case EV_NORMAL_01_MONITOR: // baja la temperatura y se vuelve al estado normal de funcionamiento
+						counter_tick -= (p_set_up_dta->tiempo_reporta_falla - p_task_system_dta->tick);
 						p_task_system_dta->tick = counter_tick; //vuelvo a dejar el counter donde estaba antes de entrar a falla
 						p_task_system_dta->state = ST_NORMAL_01_MONITOR;
 						break;
@@ -390,7 +406,7 @@ void task_system_update(void *parameters)
 						put_event_task_actuator(EV_LED_XX_BLINK,ID_AIRE_A);
 						put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_B);
 						//cambio a estado standby
-						p_task_system_dta->tick = MAX_TICK_SWITCH;
+						p_task_system_dta->tick = p_set_up_dta->tiempo_conmuta;
 						p_task_system_dta->state = ST_NORMAL_01_MONITOR;
 
 						break;
