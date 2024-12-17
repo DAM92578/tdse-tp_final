@@ -64,6 +64,8 @@ const task_actuator_cfg_t task_actuator_cfg_list[] = {
 	 DEL_LED_XX_BLI, DEL_LED_XX_PUL},
 	{ID_LED_B,  LED_B_PORT,  LED_B_PIN, LED_B_ON,  LED_B_OFF,
 	 	 DEL_LED_XX_BLI, DEL_LED_XX_PUL},
+	{ID_LED_C,  LED_C_PORT,  LED_C_PIN, LED_C_ON,  LED_C_OFF,
+				 DEL_LED_XX_BLI, DEL_LED_XX_PUL},
 	{ID_BUZZER_A,  BUZZER_A_PORT,  BUZZER_A_PIN, BUZZER_A_ON,  BUZZER_A_OFF,
 		 DEL_LED_XX_BLI, DEL_LED_XX_PUL},
 	{ID_AIRE_A, AIRE_A_PORT,  AIRE_A_PIN, AIRE_A_ON,  AIRE_A_OFF,
@@ -249,7 +251,7 @@ void task_actuator_update(void *parameters)
 					break;
 
 				case ST_LED_XX_BLINK:
-					//if (true == p_task_actuator_dta->flag)
+					if (true == p_task_actuator_dta->flag)
 					{
 						switch(p_task_actuator_dta->event){
 
@@ -298,7 +300,7 @@ void task_actuator_update(void *parameters)
 					break;
 
 				case ST_LED_XX_PULSE:
-					//if (true == p_task_actuator_dta->flag)
+					if (true == p_task_actuator_dta->flag)
 					{
 						switch(p_task_actuator_dta->event){
 							case EV_LED_XX_OFF: // aca estos dos eventos dan el mismo resultado, apagar el led y mandarlo a estado off. PREGUNTAR A JUAN SI ESTA BIEN

@@ -63,17 +63,18 @@ extern "C" {
 
 /* Events to excite Task System */
 typedef enum task_system_ev {	EV_NORMAL_01_MONITOR,
-  								EV_NORMAL_01_ALARM_MONITOR,
 								EV_NORMAL_01_FAILURE,
 								EV_NORMAL_01_SWITCH_MOTOR,
-								EV_NORMAL_01_STAND_BY,
+								EV_NORMAL_01_NEX_ACTIVE,
+								EV_NORMAL_01_ENT_ACTIVE,
+								EV_NORMAL_O1_OFF,
 												} task_system_ev_t;
 
 /* State of Task System */
 typedef enum task_system_st {	ST_NORMAL_01_MONITOR,
-  								ST_NORMAL_01_ALARM,
 								ST_NORMAL_01_FAILURE,
 								ST_NORMAL_01_STANDBY,
+								ST_NORMAL_01_OFF,
 												} task_system_st_t;
 
 
