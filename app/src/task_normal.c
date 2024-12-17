@@ -50,7 +50,6 @@
 #include "display.h"
 
 #include "task_adc_interface.h"
-//#include "task_adc_attribute.h"
 
 #include "task_normal_attribute.h"
 #include "task_normal_interface.h"
@@ -195,8 +194,8 @@ void task_system_update(void *parameters)
 					case EV_NORMAL_01_FAILURE: //Entra en estado de alarma
 						 //comienza el tick de alarma y pasa al estado de alarma
 						//guardo el tick anterior;
-						counter_tick = task_system_dta->tick;
-						task_system_dta->tick = MAX_TICK_ALARM;
+						counter_tick = p_task_system_dta->tick;
+						p_task_system_dta->tick = MAX_TICK_ALARM;
 						p_task_system_dta->state = ST_NORMAL_01_FAILURE;
 
 						//da un mensaje al usuario de estado de alarma ? esto validar
@@ -236,7 +235,7 @@ void task_system_update(void *parameters)
 						//clock_tick ++ en el caso de setear un clock a mano
 					*/
 						//////////////////////// BLINK de leds y check counter //////////////
-						if (task_system_dta->tick > 0){// si el tiempo de operacion no termino
+						if (p_task_system_dta->tick > 0){// si el tiempo de operacion no termino
 							if (HAL_GPIO_ReadPin(LED_B_PORT, LED_B_PIN) == LED_B_ON){ //si el aire B esta prendido
 								put_event_task_actuator(EV_LED_XX_BLINK,ID_AIRE_B); //hago parpadear la luz testigo de B
 
@@ -244,7 +243,7 @@ void task_system_update(void *parameters)
 							else{
 								put_event_task_actuator(EV_LED_XX_BLINK,ID_AIRE_A);
 							}
-							task_system_dta->tick --;
+							p_task_system_dta->tick --;
 						}
 						else {
 							//hago el switch de motores y reinicio el tiempo al seteado por el usuario
@@ -263,7 +262,7 @@ void task_system_update(void *parameters)
 								put_event_task_actuator(EV_LED_XX_BLINK,ID_AIRE_B);
 								put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_A);
 							}
-							task_system_dta->tick = MAX_TICK_SWITCH; ///ACA REEMPLAZAR POR EL QUE LEVANTA DEL USUARIO
+							p_task_system_dta->tick = MAX_TICK_SWITCH; ///ACA REEMPLAZAR POR EL QUE LEVANTA DEL USUARIO
 						}
 
 						break;
@@ -325,8 +324,8 @@ void task_system_update(void *parameters)
 								put_event_task_actuator(EV_LED_XX_BLINK,ID_AIRE_B);
 								put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_A);
 							}
-							task_system_dta->tick = MAX_TICK_SWITCH; ///ACA REEMPLAZAR POR EL QUE LEVANTA DEL USUARIO
-							task_system_dta->state = ST_NORMAL_01_MONITOR;
+							p_task_system_dta->tick = MAX_TICK_SWITCH; ///ACA REEMPLAZAR POR EL QUE LEVANTA DEL USUARIO
+							p_task_system_dta->state = ST_NORMAL_01_MONITOR;
 
 						}
 						else{
@@ -336,7 +335,7 @@ void task_system_update(void *parameters)
 
 
 					case EV_NORMAL_01_MONITOR: // baja la temperatura y se vuelve al estado normal de funcionamiento
-						task_system_dta->tick = counter_tick; //vuelvo a dejar el counter donde estaba antes de entrar a falla
+						p_task_system_dta->tick = counter_tick; //vuelvo a dejar el counter donde estaba antes de entrar a falla
 						p_task_system_dta->state = ST_NORMAL_01_MONITOR;
 						break;
 
@@ -391,7 +390,7 @@ void task_system_update(void *parameters)
 						put_event_task_actuator(EV_LED_XX_BLINK,ID_AIRE_A);
 						put_event_task_actuator(EV_LED_XX_OFF,ID_AIRE_B);
 						//cambio a estado standby
-						task_system_dta->tick = MAX_TICK_SWITCH;
+						p_task_system_dta->tick = MAX_TICK_SWITCH;
 						p_task_system_dta->state = ST_NORMAL_01_MONITOR;
 
 						break;
